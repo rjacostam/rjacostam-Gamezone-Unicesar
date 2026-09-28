@@ -74,4 +74,23 @@ public class Return {
         this.refundAmount = total;
         return total;
     }
+
+    /**
+     * Generates a printable return receipt (Spanish, user-facing).
+     * @return receipt text
+     */
+    public String generateReturnReceipt() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== GameZone Unicesar - Comprobante de devolucion ===\n");
+        sb.append("Devolucion: ").append(id).append("\n");
+        sb.append("Fecha: ").append(returnDate).append("\n");
+        sb.append("Venta original: ").append(sale.getId()).append("\n");
+        for (Product p : returnedProducts) {
+            sb.append("- ").append(p.getId()).append(" ").append(p.getTitle())
+              .append(" Precio: ").append(p.getPrice()).append("\n");
+        }
+        sb.append("Motivo: ").append(reason).append("\n");
+        sb.append("Valor reembolsado: ").append(refundAmount).append("\n");
+        return sb.toString();
+    }
 }
