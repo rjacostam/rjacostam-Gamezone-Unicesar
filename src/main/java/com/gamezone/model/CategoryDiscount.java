@@ -57,7 +57,7 @@ public class CategoryDiscount extends Promotion {
     /**
      * Resolves the category of a product.
      * @param product product
-     * @return category, null when it has no base category
+     * @return category, null when it has no discount category
      */
     public static ProductCategory categoryOf(Product product) {
         if (product instanceof VideoGame) {
@@ -65,6 +65,9 @@ public class CategoryDiscount extends Promotion {
         }
         if (product instanceof Console) {
             return ProductCategory.CONSOLE;
+        }
+        if (product instanceof Accessory) {
+            return ProductCategory.ACCESSORY;
         }
         return null;
     }
