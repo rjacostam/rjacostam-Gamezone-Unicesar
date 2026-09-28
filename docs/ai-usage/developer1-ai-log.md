@@ -1,0 +1,141 @@
+# Bitacora de uso de IA — Desarrollador 1 (modelo)
+
+## Entrada 1
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 1, `feature/accessory-module`
+- Objetivo: Implementar la jerarquia de accesorios del modelo sin romper la base del Taller.
+- Consulta: Que clases del modelo le tocan al Desarrollador 1 y contra que API de Sale deben compilar.
+- Respuesta: Dev1 implementa Accessory y subclases; el Sale real del repo usa `getItems()` y `getSubtotal()`, y `Sale.canBeReturned()` ya existe.
+- Decision: Se acepto disenar Accessory extendiendo Product con lista de consolas compatibles y `getAccessoryType()` como discriminador. Se descarto crear una jerarquia independiente porque duplicaba id, titulo, precio y stock. No se toco `Sale.java` (propiedad del Lider).
+- Commit relacionado: feat: add Controller Cable and Memory accessory types
+
+## Entrada 2
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 1, `feature/accessory-module`
+- Objetivo: Verificar que el modelo compile contra el `Sale.java` real del repositorio.
+- Consulta: Como comprobar compatibilidad si `develop` no compila (faltan Customer y Seller del Desarrollador 2).
+- Respuesta: Compilar en carpeta temporal el `Sale.java` real mas los archivos del Dev1 con stubs temporales de Person, Customer y Seller (solo verificacion, no se publican).
+- Decision: Se acepto; la verificacion paso con `javac --release 17` sin errores. Los stubs se eliminaron y no entraron a ningun commit.
+- Commit relacionado: docs: record accessory module in developer1 AI usage log
+
+## Entrada 3
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 2, `feature/promotion-module`
+- Objetivo: Disenar la jerarquia de promociones con calculos distintos por tipo.
+- Consulta: Como lograr que cada promocion calcule su descuento sin que el resto del sistema conozca los tipos concretos.
+- Respuesta: Clase abstracta Promotion con `isActive(LocalDate)` concreto y `calculateDiscount(Sale)` abstracto; cada subclase lo implementa con `@Override`. La seleccion de la mejor promocion queda en PromotionService (Desarrollador 2), no en Sale ni en el menu.
+- Decision: Se acepto. PercentageDiscount aplica sobre `getSubtotal()`; BulkPurchaseDiscount retorna 0 bajo el minimo; CategoryDiscount filtra con `instanceof` sobre `getItems()` (API real del Sale del repo).
+- Commit relacionado: feat: add BulkPurchaseDiscount with minimum quantity
+
+## Entrada 4
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 2, `feature/promotion-module`
+- Objetivo: Definir el tipo de la categoria objetivo de CategoryDiscount.
+- Consulta: String o enum para la categoria (VIDEOGAME, CONSOLE).
+- Respuesta: El enunciado R2 fija String con esos dos valores; A1 agregara ACCESSORY en su propia rama.
+- Decision: Se acepto String con validacion en constructor y setter. Se descarto el enum para no desviarse del enunciado. El soporte de accesorios queda diferido a `feature/accessory-category-discount`.
+- Commit relacionado: docs: document promotion category decision in AI usage log
+
+## Entrada 5
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 3, `feature/warranty-module`
+- Objetivo: Disenar la jerarquia de garantias segun R4 sin reintroducir la dependencia circular de A2.
+- Consulta: Referencias a objetos (Product, Sale) o solo identificadores en la clase Warranty.
+- Respuesta: R4 exige producto y venta asociados con getters; A2 solo cambia persistencia (guardar identificadores) y cableado de servicios, no el modelo. Referencias objeto en el modelo no crean el ciclo.
+- Decision: Se acepto Warranty con referencias a Product y Sale, fecha de fin calculada en el constructor con `getDurationInMonths()`, `getAdditionalCost()` sin parametros (10% del precio asociado en la extendida) y certificado en espanol.
+- Commit relacionado: feat: add ExtendedWarranty with ten percent cost
+
+## Entrada 6
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 3, `feature/warranty-module`
+- Objetivo: Decidir donde van `isActive` y el certificado de garantia.
+- Consulta: La vigencia y el certificado pertenecen al modelo o al servicio.
+- Respuesta: `isActive(LocalDate)` y `generateWarrantyCertificate()` son comportamiento del dominio (usan solo fechas y referencias propias); el filtrado de listas (vigentes, proximas a vencer) queda en WarrantyService del Desarrollador 2.
+- Decision: Se acepto; el certificado sale en espanol (mensaje visible al usuario) y el JavaDoc en ingles.
+- Commit relacionado: docs: document warranty certificate decision in AI usage log
+
+## Entrada 7
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 4, `feature/return-module`
+- Objetivo: Disenar la clase Return y su relacion con Sale.
+- Consulta: La relacion Return-Sale es herencia, asociacion, agregacion o composicion, y como representar devoluciones parciales.
+- Respuesta: Asociacion: Return referencia la venta original sin poseerla (la venta sobrevive a la devolucion). Los productos devueltos son una sublista `List<Product>` (parcial permitida). La validacion de 30 dias y pertenencia va en ReturnService; `Sale.canBeReturned()` ya existe en el repo como apoyo.
+- Decision: Se acepto. El reembolso base suma precios de lista; el proporcional con descuento queda para A5 (`fix/return-discounted-refund`).
+- Commit relacionado: feat: add return receipt generation in Spanish
+
+## Entrada 8
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 4, `feature/return-module`
+- Objetivo: Decidir el contenido del recibo de devolucion base.
+- Consulta: Que detalle debe mostrar `generateReturnReceipt()` en la version base R3.
+- Respuesta: Identificador, fecha, venta original, productos con precios, motivo y monto reembolsado, todo en espanol. El desglose con descuento proporcional por item llega en A5.
+- Decision: Se acepto; el recibo base lista cada producto con su precio. La version proporcional se implementa en `fix/return-discounted-refund`.
+- Commit relacionado: docs: document return receipt decision in AI usage log
+
+## Entrada 9
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 2, `feature/accessory-category-discount` (ajuste A1)
+- Objetivo: Permitir promociones por categoria sobre accesorios.
+- Consulta: Que cambia en CategoryDiscount para admitir ACCESSORY.
+- Respuesta: Ampliar la validacion a la tercera categoria y reconocer toda instancia de Accessory en `calculateDiscount` con `instanceof`.
+- Decision: Se acepto en dos commits (validacion + calculo). PromotionService y ConsoleMenu quedan para el Desarrollador 2 y el Lider; el dato precargado de promociones tambien es de su capa.
+- Commit relacionado: docs: record accessory category discount in AI usage log
+
+## Entrada 10
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 4, `fix/return-discounted-refund` (ajuste A5)
+- Objetivo: Evitar reembolsar de mas cuando la venta original tuvo promocion.
+- Consulta: Como calcular el reembolso proporcional con los datos del Sale real.
+- Respuesta: `precio * (1 - descuento / subtotal)` usando `sale.getDiscountAmount()` y `sale.getSubtotal()`, con razon acotada a [0,1] y subtotal positivo. El recibo muestra por item precio de lista, descuento proporcional y valor reembolsado.
+- Decision: Se acepto. El reembolso por garantias canceladas (A7) lo suma ReturnService del Desarrollador 2; el modelo solo expone el calculo por items.
+- Commit relacionado: docs: record discounted refund fix in AI usage log
+
+## Entrada 11
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Todas (alineacion con codigo fusionado en `develop`)
+- Objetivo: Resolver que el codigo ya fusionado por Dev2 y Lider usa APIs del modelo distintas a las ramas del Dev1.
+- Consulta: Inventario de llamadas reales hacia clases del Dev1: `getCompatibleConsoles`, `getLength`, `ProductCategory` enum, constructores de garantias por identificadores, `Return` de 6 argumentos con calculo estatico, `getWarrantyType()` como discriminador BASIC/EXTENDED, `ProductService` con `findById`/`decreaseStock` y `ProductRepository` sin argumentos.
+- Respuesta: Si el modelo del Dev1 no coincide, `develop` jamas compila. Las desviaciones respecto a R3/R4 (garantias y devoluciones por identificadores, tipos en ingles para el CSV) se justifican por A2 y por el codigo ya fusionado del equipo.
+- Decision: Se acepto alinear el modelo con fix commits en cada rama del Dev1 y dejar constancia aqui. Quedan pendientes del resto del equipo: firmas entre SaleService/WarrantyService, metodos del menu vs servicios y constructores del Main (ver mensaje al equipo).
+- Commit relacionado: fix: align accessory getters with repository and service
+
+## Entrada 12
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: `feature/product-module` (Taller pendiente)
+- Objetivo: Crear ProductRepository y ProductService que no existen en ningun lado.
+- Consulta: Que API debe exponer ProductService para que compilen SaleService y ConsoleMenu ya fusionados.
+- Respuesta: Constructor con repositorio, `registerVideoGame`/`registerConsole` con 7 argumentos crudos, `listAll`, `findById` que retorna null si falta, `decreaseStock` para ventas y `restoreStock` para devoluciones; repositorio sin argumentos apuntando a `data/products.csv` como pide el Main, con discriminador VIDEOGAME/CONSOLE. Sin semilla (es del Lider).
+- Decision: Se acepto siguiendo los mismos patrones de AccessoryService/AccessoryRepository del equipo.
+- Commit relacionado: docs: record product module in developer1 AI usage log
+
+## Entrada 13
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 2, `feature/accessory-category-discount` (ajuste A1, recreada)
+- Objetivo: Rehacer A1 sobre la base con enum, sin arrastrar la version String superada.
+- Consulta: Se puede eliminar y recrear una rama propia sin PR abierto ni revision ajena.
+- Respuesta: Si, siempre que no tenga PR ni trabajo ajeno; esta prohibido el `push --force`, no la eliminacion de rama propia no fusionada.
+- Decision: Se acepto recrear la rama desde la nueva punta de promociones con dos commits de codigo (validacion + mapeo). La version enum ya incluye ACCESSORY como valor porque `data/promotions.csv` trae una fila CATEGORY/ACCESSORY que debe cargar desde el dia uno.
+- Commit relacionado: fix: recognize Accessory instances in category discount
+
+## Entrada 14
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 4, `fix/return-discounted-refund` (ajuste A5, recreada)
+- Objetivo: Rehacer A5 sobre el Return con forma del equipo.
+- Consulta: Que queda de A5 si el calculo proporcional ya vive en el metodo estatico que usa ReturnService.
+- Respuesta: Blindar el calculo (subtotal cero, razon acotada, piso en cero) y dejar constancia proporcional en el recibo.
+- Decision: Se acepto en dos commits. El recibo no puede desglosar precios por item porque el modelo guarda identificadores (decision de equipo en persistencia).
+- Commit relacionado: fix: show proportional discount note in return receipt
