@@ -99,7 +99,7 @@ public class Return {
         sb.append("Venta original: ").append(saleId).append("\n");
         sb.append("Productos devueltos: ").append(productIds).append("\n");
         sb.append("Motivo: ").append(reason).append("\n");
-        sb.append("Valor reembolsado: ").append(refundAmount).append("\n");
+        sb.append("Valor reembolsado (proporcional al descuento): ").append(refundAmount).append("\n");
         return sb.toString();
     }
 }
