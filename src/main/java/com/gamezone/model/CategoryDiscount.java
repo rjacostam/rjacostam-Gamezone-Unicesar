@@ -5,7 +5,7 @@ import java.time.LocalDate;
 /**
  * Discount applied only to products of a target category.
  * Base version (R2): VIDEOGAME or CONSOLE.
- * Adjustment A1 widens validation to ACCESSORY (branch feature/accessory-category-discount).
+ * Adjustment A1 also admits ACCESSORY.
  */
 public class CategoryDiscount extends Promotion {
     private double percent;
@@ -29,13 +29,9 @@ public class CategoryDiscount extends Promotion {
         if (targetCategory == null) {
             throw new IllegalArgumentException("Target category is required");
         }
-        if (targetCategory == ProductCategory.ACCESSORY) {
-            throw new IllegalArgumentException("ACCESSORY requires adjustment A1");
-        }
         this.percent = percent;
         this.targetCategory = targetCategory;
     }
-
     /** @return percent */
     public double getPercent() { return percent; }
 
@@ -54,9 +50,6 @@ public class CategoryDiscount extends Promotion {
     public void setTargetCategory(ProductCategory targetCategory) {
         if (targetCategory == null) {
             throw new IllegalArgumentException("Target category is required");
-        }
-        if (targetCategory == ProductCategory.ACCESSORY) {
-            throw new IllegalArgumentException("ACCESSORY requires adjustment A1");
         }
         this.targetCategory = targetCategory;
     }
