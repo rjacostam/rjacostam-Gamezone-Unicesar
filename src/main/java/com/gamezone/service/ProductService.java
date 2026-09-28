@@ -89,6 +89,43 @@ public class ProductService {
         return null;
     }
 
+    /**
+     * Decreases stock on sale.
+     * @param id product id
+     * @param quantity quantity sold
+     */
+    public void decreaseStock(String id, int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be >= 1");
+        }
+        Product p = findById(id);
+        if (p == null) {
+            throw new IllegalArgumentException("Product not found: " + id);
+        }
+        if (p.getStock() < quantity) {
+            throw new IllegalArgumentException("Insufficient stock for: " + id);
+        }
+        p.setStock(p.getStock() - quantity);
+        persist();
+    }
+
+    /**
+     * Restores stock on return.
+     * @param id product id
+     * @param quantity quantity to restore
+     */
+    public void restoreStock(String id, int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be >= 1");
+        }
+        Product p = findById(id);
+        if (p == null) {
+            throw new IllegalArgumentException("Product not found: " + id);
+        }
+        p.setStock(p.getStock() + quantity);
+        persist();
+    }
+
     private void persist() {
         try {
             repository.saveAll(products);
