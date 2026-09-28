@@ -23,6 +23,9 @@ public abstract class Promotion {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Promotion id is required");
         }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Promotion name is required");
+        }
         if (startDate != null && endDate != null && endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date must be on or after start date");
         }
