@@ -49,3 +49,13 @@
 - Respuesta: R4 exige producto y venta asociados con getters; A2 solo cambia persistencia (guardar identificadores) y cableado de servicios, no el modelo. Referencias objeto en el modelo no crean el ciclo.
 - Decision: Se acepto Warranty con referencias a Product y Sale, fecha de fin calculada en el constructor con `getDurationInMonths()`, `getAdditionalCost()` sin parametros (10% del precio asociado en la extendida) y certificado en espanol.
 - Commit relacionado: feat: add ExtendedWarranty with ten percent cost
+
+## Entrada 6
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 3, `feature/warranty-module`
+- Objetivo: Decidir donde van `isActive` y el certificado de garantia.
+- Consulta: La vigencia y el certificado pertenecen al modelo o al servicio.
+- Respuesta: `isActive(LocalDate)` y `generateWarrantyCertificate()` son comportamiento del dominio (usan solo fechas y referencias propias); el filtrado de listas (vigentes, proximas a vencer) queda en WarrantyService del Desarrollador 2.
+- Decision: Se acepto; el certificado sale en espanol (mensaje visible al usuario) y el JavaDoc en ingles.
+- Commit relacionado: docs: document warranty certificate decision in AI usage log
