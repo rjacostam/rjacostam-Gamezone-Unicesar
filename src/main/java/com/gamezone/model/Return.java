@@ -61,4 +61,17 @@ public class Return {
 
     /** @return refund amount */
     public double getRefundAmount() { return refundAmount; }
+
+    /**
+     * Calculates the refund as the sum of returned list prices (R3 base).
+     * @return refund amount
+     */
+    public double calculateRefundAmount() {
+        double total = 0;
+        for (Product p : returnedProducts) {
+            total += p.getPrice();
+        }
+        this.refundAmount = total;
+        return total;
+    }
 }
