@@ -4,12 +4,12 @@ import java.time.LocalDate;
 
 /**
  * Discount applied only to products of a target category.
- * Base version (R2): target category is VIDEOGAME or CONSOLE.
- * Adjustment A1 adds ACCESSORY support on branch feature/accessory-category-discount.
+ * Base version (R2): VIDEOGAME or CONSOLE.
+ * Adjustment A1 widens validation to ACCESSORY (branch feature/accessory-category-discount).
  */
 public class CategoryDiscount extends Promotion {
     private double percent;
-    private String targetCategory;
+    private ProductCategory targetCategory;
 
     /**
      * Creates a category discount.
@@ -18,16 +18,19 @@ public class CategoryDiscount extends Promotion {
      * @param startDate start date
      * @param endDate end date
      * @param percent percent (0-100)
-     * @param targetCategory target category (VIDEOGAME, CONSOLE)
+     * @param targetCategory target category
      */
     public CategoryDiscount(String id, String name, LocalDate startDate, LocalDate endDate,
-                            double percent, String targetCategory) {
+                            double percent, ProductCategory targetCategory) {
         super(id, name, startDate, endDate);
         if (percent < 0 || percent > 100) {
             throw new IllegalArgumentException("Percent must be between 0 and 100");
         }
-        if (!"VIDEOGAME".equals(targetCategory) && !"CONSOLE".equals(targetCategory)) {
-            throw new IllegalArgumentException("Target category must be VIDEOGAME or CONSOLE");
+        if (targetCategory == null) {
+            throw new IllegalArgumentException("Target category is required");
+        }
+        if (targetCategory == ProductCategory.ACCESSORY) {
+            throw new IllegalArgumentException("ACCESSORY requires adjustment A1");
         }
         this.percent = percent;
         this.targetCategory = targetCategory;
@@ -45,14 +48,32 @@ public class CategoryDiscount extends Promotion {
     }
 
     /** @return target category */
-    public String getTargetCategory() { return targetCategory; }
+    public ProductCategory getTargetCategory() { return targetCategory; }
 
-    /** @param targetCategory target category (VIDEOGAME, CONSOLE) */
-    public void setTargetCategory(String targetCategory) {
-        if (!"VIDEOGAME".equals(targetCategory) && !"CONSOLE".equals(targetCategory)) {
-            throw new IllegalArgumentException("Target category must be VIDEOGAME or CONSOLE");
+    /** @param targetCategory target category */
+    public void setTargetCategory(ProductCategory targetCategory) {
+        if (targetCategory == null) {
+            throw new IllegalArgumentException("Target category is required");
+        }
+        if (targetCategory == ProductCategory.ACCESSORY) {
+            throw new IllegalArgumentException("ACCESSORY requires adjustment A1");
         }
         this.targetCategory = targetCategory;
+    }
+
+    /**
+     * Resolves the category of a product.
+     * @param product product
+     * @return category, null when it has no base category
+     */
+    public static ProductCategory categoryOf(Product product) {
+        if (product instanceof VideoGame) {
+            return ProductCategory.VIDEOGAME;
+        }
+        if (product instanceof Console) {
+            return ProductCategory.CONSOLE;
+        }
+        return null;
     }
 
     @Override
@@ -62,9 +83,7 @@ public class CategoryDiscount extends Promotion {
         }
         double base = 0;
         for (Product p : sale.getItems()) {
-            if ("VIDEOGAME".equals(targetCategory) && p instanceof VideoGame) {
-                base += p.getPrice();
-            } else if ("CONSOLE".equals(targetCategory) && p instanceof Console) {
+            if (categoryOf(p) == targetCategory) {
                 base += p.getPrice();
             }
         }
