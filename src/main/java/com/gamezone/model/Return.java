@@ -77,7 +77,14 @@ public class Return {
      * @return refundable amount for the item
      */
     public static double calculateRefundAmount(double price, double subtotal, double discount) {
-        return price * (1 - discount / subtotal);
+        if (price < 0) {
+            return 0;
+        }
+        if (subtotal <= 0) {
+            return price;
+        }
+        double ratio = Math.min(Math.max(discount / subtotal, 0), 1);
+        return Math.max(price * (1 - ratio), 0);
     }
 
     /**
