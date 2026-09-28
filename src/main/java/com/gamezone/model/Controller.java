@@ -35,7 +35,7 @@ public class Controller extends Accessory {
     public String getDescription() {
         return "Controller [" + getId() + "] " + getTitle()
                 + " | Connection: " + connectionType
-                + " | Compatible: " + getCompatibleConsoleIds()
+                + " | Compatible: " + getCompatibleConsoles()
                 + " | Price: " + getPrice()
                 + " | Stock: " + getStock();
     }

@@ -43,7 +43,7 @@ public class Memory extends Accessory {
         return "Memory [" + getId() + "] " + getTitle()
                 + " | Capacity: " + capacityGB + "GB"
                 + " | Type: " + memoryType
-                + " | Compatible: " + getCompatibleConsoleIds()
+                + " | Compatible: " + getCompatibleConsoles()
                 + " | Price: " + getPrice()
                 + " | Stock: " + getStock();
     }

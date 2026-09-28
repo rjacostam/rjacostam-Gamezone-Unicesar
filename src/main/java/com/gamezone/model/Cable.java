@@ -27,9 +27,9 @@ public class Cable extends Accessory {
     }
 
     /** @return length in meters */
-    public double getLengthMeters() { return lengthMeters; }
+    public double getLength() { return lengthMeters; }
     /** @param lengthMeters length in meters */
-    public void setLengthMeters(double lengthMeters) { this.lengthMeters = lengthMeters; }
+    public void setLength(double lengthMeters) { this.lengthMeters = lengthMeters; }
     /** @return connector type */
     public String getConnectorType() { return connectorType; }
     /** @param connectorType connector type */
@@ -43,7 +43,7 @@ public class Cable extends Accessory {
         return "Cable [" + getId() + "] " + getTitle()
                 + " | Length: " + lengthMeters + "m"
                 + " | Connector: " + connectorType
-                + " | Compatible: " + getCompatibleConsoleIds()
+                + " | Compatible: " + getCompatibleConsoles()
                 + " | Price: " + getPrice()
                 + " | Stock: " + getStock();
     }

@@ -28,7 +28,7 @@ public abstract class Accessory extends Product {
     /**
      * @return copy of compatible console ids
      */
-    public List<String> getCompatibleConsoleIds() {
+    public List<String> getCompatibleConsoles() {
         return new ArrayList<>(compatibleConsoleIds);
     }
 
