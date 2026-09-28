@@ -1,0 +1,4 @@
+type;id;title;price;stock;consoles;extra1;extra2
+CONTROLLER;A-01;DualSense;350000;8;C-01;WIRELESS;
+CABLE;A-02;HDMI 2.1;80000;15;C-01;2.0;HDMI
+MEMORY;A-03;SSD 1TB;450000;6;C-01;1024;NVME

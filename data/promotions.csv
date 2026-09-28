@@ -1,0 +1,4 @@
+type;id;name;start;end;percent;targetOrMinQty
+PERCENTAGE;P-01;10% off;2026-09-01;2026-09-30;10;
+CATEGORY;P-02;20% accesorios;2026-09-01;2026-09-30;20;ACCESSORY
+BULK;P-03;5% por 3+;2026-09-01;2026-09-30;5;3
