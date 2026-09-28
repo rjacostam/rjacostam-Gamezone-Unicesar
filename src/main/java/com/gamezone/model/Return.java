@@ -25,6 +25,15 @@ public class Return {
      */
     public Return(String id, LocalDate returnDate, Sale sale,
                   List<Product> returnedProducts, String reason) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Return id is required");
+        }
+        if (sale == null) {
+            throw new IllegalArgumentException("Original sale is required");
+        }
+        if (returnedProducts == null || returnedProducts.isEmpty()) {
+            throw new IllegalArgumentException("Return requires at least one product");
+        }
         this.id = id;
         this.returnDate = returnDate;
         this.sale = sale;
