@@ -69,3 +69,13 @@
 - Respuesta: Asociacion: Return referencia la venta original sin poseerla (la venta sobrevive a la devolucion). Los productos devueltos son una sublista `List<Product>` (parcial permitida). La validacion de 30 dias y pertenencia va en ReturnService; `Sale.canBeReturned()` ya existe en el repo como apoyo.
 - Decision: Se acepto. El reembolso base suma precios de lista; el proporcional con descuento queda para A5 (`fix/return-discounted-refund`).
 - Commit relacionado: feat: add return receipt generation in Spanish
+
+## Entrada 8
+- Fecha: 2026-09-28
+- Herramienta: Muse Spark (agente de codigo OpenCode)
+- Fase y rama: Fase 4, `feature/return-module`
+- Objetivo: Decidir el contenido del recibo de devolucion base.
+- Consulta: Que detalle debe mostrar `generateReturnReceipt()` en la version base R3.
+- Respuesta: Identificador, fecha, venta original, productos con precios, motivo y monto reembolsado, todo en espanol. El desglose con descuento proporcional por item llega en A5.
+- Decision: Se acepto; el recibo base lista cada producto con su precio. La version proporcional se implementa en `fix/return-discounted-refund`.
+- Commit relacionado: docs: document return receipt decision in AI usage log
