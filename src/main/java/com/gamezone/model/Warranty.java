@@ -4,43 +4,37 @@ import java.time.LocalDate;
 
 /**
  * Base class for warranties.
- * Holds direct references to the associated product and sale (R4).
- * Persistence stores only their identifiers (A2).
+ * Stores only product and sale identifiers so persistence never needs
+ * object references (adjustment A2: no SaleService dependency).
  */
 public abstract class Warranty {
-    private String warrantyId;
-    private Product product;
-    private Sale sale;
+    private String id;
+    private String productId;
     private LocalDate startDate;
     private LocalDate endDate;
 
     /**
      * Creates a warranty. The end date is computed automatically
      * from the duration reported by the concrete subclass.
-     * @param warrantyId warranty identifier
-     * @param product associated product
-     * @param sale associated sale
+     * @param id warranty identifier
+     * @param productId associated product identifier
      * @param startDate warranty start date (sale date)
      */
-    public Warranty(String warrantyId, Product product, Sale sale, LocalDate startDate) {
-        if (warrantyId == null || warrantyId.isBlank()) {
+    public Warranty(String id, String productId, LocalDate startDate) {
+        if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Warranty id is required");
         }
-        this.warrantyId = warrantyId;
-        this.product = product;
-        this.sale = sale;
+        this.id = id;
+        this.productId = productId;
         this.startDate = startDate;
         this.endDate = startDate != null ? startDate.plusMonths(getDurationInMonths()) : null;
     }
 
     /** @return warranty identifier */
-    public String getWarrantyId() { return warrantyId; }
+    public String getId() { return id; }
 
-    /** @return associated product */
-    public Product getProduct() { return product; }
-
-    /** @return associated sale */
-    public Sale getSale() { return sale; }
+    /** @return associated product identifier */
+    public String getProductId() { return productId; }
 
     /** @return start date */
     public LocalDate getStartDate() { return startDate; }
@@ -54,7 +48,7 @@ public abstract class Warranty {
     public abstract int getDurationInMonths();
 
     /**
-     * @return warranty type name
+     * @return warranty type discriminator (BASIC, EXTENDED)
      */
     public abstract String getWarrantyType();
 
@@ -82,13 +76,8 @@ public abstract class Warranty {
     public String generateWarrantyCertificate() {
         StringBuilder sb = new StringBuilder();
         sb.append("=== GameZone Unicesar - Certificado de garantia ===\n");
-        sb.append("Garantia: ").append(warrantyId).append(" (").append(getWarrantyType()).append(")\n");
-        if (product != null) {
-            sb.append("Producto: ").append(product.getId()).append(" - ").append(product.getTitle()).append("\n");
-        }
-        if (sale != null) {
-            sb.append("Venta: ").append(sale.getId()).append(" Fecha: ").append(sale.getDate()).append("\n");
-        }
+        sb.append("Garantia: ").append(id).append(" (").append(getWarrantyType()).append(")\n");
+        sb.append("Producto: ").append(productId).append("\n");
         sb.append("Inicio: ").append(startDate).append(" Fin: ").append(endDate).append("\n");
         sb.append("Costo adicional: ").append(getAdditionalCost()).append("\n");
         return sb.toString();
