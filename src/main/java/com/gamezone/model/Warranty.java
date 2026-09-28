@@ -62,4 +62,35 @@ public abstract class Warranty {
      * @return additional cost added to the sale total
      */
     public abstract double getAdditionalCost();
+
+    /**
+     * Checks coverage on the given date.
+     * @param date date to check
+     * @return true if covered
+     */
+    public boolean isActive(LocalDate date) {
+        if (date == null || startDate == null || endDate == null) {
+            return false;
+        }
+        return !date.isBefore(startDate) && !date.isAfter(endDate);
+    }
+
+    /**
+     * Generates a printable warranty certificate (Spanish, user-facing).
+     * @return certificate text
+     */
+    public String generateWarrantyCertificate() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== GameZone Unicesar - Certificado de garantia ===\n");
+        sb.append("Garantia: ").append(warrantyId).append(" (").append(getWarrantyType()).append(")\n");
+        if (product != null) {
+            sb.append("Producto: ").append(product.getId()).append(" - ").append(product.getTitle()).append("\n");
+        }
+        if (sale != null) {
+            sb.append("Venta: ").append(sale.getId()).append(" Fecha: ").append(sale.getDate()).append("\n");
+        }
+        sb.append("Inicio: ").append(startDate).append(" Fin: ").append(endDate).append("\n");
+        sb.append("Costo adicional: ").append(getAdditionalCost()).append("\n");
+        return sb.toString();
+    }
 }
